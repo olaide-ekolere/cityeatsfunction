@@ -8,7 +8,7 @@ exports.handler = async (req, res) => {
     cors(req, res, async () => {
         //check environment variable
         //fetch variables from request body
-        var fullName = req.body.fullName;
+        var displayName = req.body.displayName;
         var email = req.body.email;
         var password = req.body.password;
         var statusCode = 400;
@@ -18,8 +18,8 @@ exports.handler = async (req, res) => {
                 statusCode = 403;
                 throw new Error('Forbidden');
             }
-            if (typeof fullName !== 'string' || fullName.length < 2) {
-                throw new Error('Full Name is must be at least 2 characters');
+            if (typeof displayName !== 'string' || displayName.length < 2) {
+                throw new Error('Display Name is must be at least 2 characters');
             }
             if (typeof email !== 'string') {
                 throw new Error('Email is required');
@@ -47,7 +47,7 @@ exports.handler = async (req, res) => {
                 email: email,
                 password: password,
                 emailVerified: false,
-                displayName: fullName,
+                displayName: displayName,
                 disabled: false
             }
             userRecord = await admin.auth().createUser(userRecord);

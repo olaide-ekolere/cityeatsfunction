@@ -7,6 +7,9 @@ admin.initializeApp({projectId: 'city-eats-983bd'});
 const signUp = require('./user/create');
 exports.signUp = functions.https.onRequest(signUp.handler);
 
+const signIn = require('./user/read');
+exports.signIn = functions.https.onRequest(signIn.handler);
+
 // // Create and Deploy Your First Cloud Functions
 // // https://firebase.google.com/docs/functions/write-firebase-functions
 //
