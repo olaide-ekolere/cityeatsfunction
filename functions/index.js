@@ -1,4 +1,11 @@
 const functions = require('firebase-functions');
+const admin = require('firebase-admin');
+admin.initializeApp({projectId: 'city-eats-983bd'});
+
+
+//User Functions
+const signUp = require('./user/create');
+exports.signUp = functions.https.onRequest(signUp.handler);
 
 // // Create and Deploy Your First Cloud Functions
 // // https://firebase.google.com/docs/functions/write-firebase-functions
