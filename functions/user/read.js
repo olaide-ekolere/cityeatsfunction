@@ -30,10 +30,10 @@ exports.handler = async (req, res) => {
             if (typeof password !== 'string' || password.length < 6) {
                 throw new Error('Password is must be at least 6 characters');
             }
-
+            let key = new Buffer(collection.key, 'base64').toString('ascii');
             var options = {
                 method: 'POST',
-                uri: 'https://www.googleapis.com/identitytoolkit/v3/relyingparty/verifyPassword?key=AIzaSyCsErcFJ3q7y-v9VdcvnoMzS-SzqODzFe0',
+                uri: `https://www.googleapis.com/identitytoolkit/v3/relyingparty/verifyPassword?key=${key}`,
                 headers: {
                     'Content-Type': 'application/json',
                 },
@@ -45,7 +45,6 @@ exports.handler = async (req, res) => {
                 json: true
             };
             let response = await promiseNetwork(options);
-            userRecord = await admin.auth().getUserByEmail(email);
 
             res.status(200).send(response);
             return Promise.resolve('Sign In Done');
