@@ -50,6 +50,7 @@ exports.handler = async (req, res) => {
                 displayName: displayName,
                 disabled: false
             }
+            
             userRecord = await admin.auth().createUser(userRecord);
             res.status(200).send({id: userRecord.uid});
             return Promise.resolve('Operation Successful');
