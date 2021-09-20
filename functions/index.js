@@ -10,6 +10,9 @@ exports.signUp = functions.https.onRequest(signUp.handler);
 const signIn = require('./user/read');
 exports.signIn = functions.https.onRequest(signIn.handler);
 
+const refreshToken = require('./user/refresh_token');
+exports.refreshToken = functions.https.onRequest(refreshToken.handler);
+
 
 
 const userTriggers = require('./user/triggers');
