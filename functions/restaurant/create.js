@@ -41,7 +41,7 @@ exports.handler = async (req, res) => {
                 totalComments: 0,
                 rating: 0,
                 fullRating: 0.0,
-                suspened: false,
+                suspended: false,
                 createdOn: new Date().toString('en-US'),
                 createdOnValue: new Date().getTime(),
                 updatedOn: new Date().toString('en-US'),

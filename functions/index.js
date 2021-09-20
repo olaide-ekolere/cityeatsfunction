@@ -23,6 +23,9 @@ exports.onCreateUserHandler = functions.auth.user().onCreate(userTriggers.onCrea
 const createRestaurant = require('./restaurant/create');
 exports.createRestaurant = functions.https.onRequest(createRestaurant.handler);
 
+const getRestaurants = require('./restaurant/read');
+exports.getRestaurants = functions.https.onRequest(getRestaurants.handler);
+
 // // Create and Deploy Your First Cloud Functions
 // // https://firebase.google.com/docs/functions/write-firebase-functions
 //
