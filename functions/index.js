@@ -26,6 +26,9 @@ exports.createRestaurant = functions.https.onRequest(createRestaurant.handler);
 const getRestaurants = require('./restaurant/read');
 exports.getRestaurants = functions.https.onRequest(getRestaurants.handler);
 
+const restaurantById = require('./restaurant/get');
+exports.restaurantById = functions.https.onRequest(restaurantById.handler);
+
 // // Create and Deploy Your First Cloud Functions
 // // https://firebase.google.com/docs/functions/write-firebase-functions
 //

@@ -63,7 +63,7 @@ exports.handler = async (req, res) => {
             return Promise.resolve('Operation Successful');
         } catch (error) {
             console.log('Error: ', error);
-            res.status(status).send({ errorMessage: error.message });
+            res.status(statusCode).send({ errorMessage: error.message });
             return Promise.reject(new Error(error));
         }
     });
