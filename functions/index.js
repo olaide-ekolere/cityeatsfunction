@@ -33,3 +33,6 @@ exports.restaurantById = functions.https.onRequest(restaurantById.handler);
 const addComment = require('./comment/create');
 exports.addComment = functions.https.onRequest(addComment.handler);
 
+const commentById = require('./comment/get');
+exports.commentById = functions.https.onRequest(commentById.handler);
+

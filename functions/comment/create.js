@@ -46,7 +46,7 @@ exports.handler = async (req, res) => {
                 let user = {
                     displayName: claims.displayName,
                     email: claims.email,
-                    suspened: false,
+                    suspended: false,
                     createdOn: new Date().toString('en-US'),
                     createdOnValue: new Date().getTime(),
                     updatedOn: new Date().toString('en-US'),
@@ -94,12 +94,12 @@ exports.handler = async (req, res) => {
 
                 //update dashboard
                 dashboard.reviews += 1;
-                if (comment) {
+                if (commentText) {
                     dashboard.comments += 1;
                 }
                 //update restaurant
                 restaurant.totalReviews += 1;
-                if (comment) {
+                if (commentText) {
                     restaurant.totalComments += 1;
                 }
 
@@ -120,7 +120,7 @@ exports.handler = async (req, res) => {
                 }
 
                 const totalScore = (restaurant.rating5 * 5) + (restaurant.rating4 * 4) +
-                    (restaurant.rating3 * 3) + (restaurant.rating2 * 2) + restaurant.rating;
+                    (restaurant.rating3 * 3) + (restaurant.rating2 * 2) + restaurant.rating1;
                 const totalUsers = restaurant.rating5 + restaurant.rating4 + restaurant.rating3 +
                     restaurant.rating2 + restaurant.rating1;
                 const average = totalScore / totalUsers;
