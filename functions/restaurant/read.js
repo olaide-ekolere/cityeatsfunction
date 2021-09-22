@@ -30,12 +30,15 @@ exports.handler = async (req, res) => {
             const r4 = req.query.r4 === undefined ? 1 : parseInt(req.query.r4);
             const r5 = req.query.r5 === undefined ? 1 : parseInt(req.query.r5);
 
-            const ratings = [0];
+            const ratings = [];
             if (r1 === 1) ratings.push(1);
             if (r2 === 1) ratings.push(2);
             if (r3 === 1) ratings.push(3);
             if (r4 === 1) ratings.push(4);
             if (r5 === 1) ratings.push(5);
+            if(ratings.length===0||ratings.length===5){
+                ratings.push(0);
+            }
             const querySnapshot = ownerId === undefined ?
                 await db.collection(collection.restaurantCollection)
                     .where('rating', 'in', ratings)
@@ -45,7 +48,7 @@ exports.handler = async (req, res) => {
                 await db.collection(collection.restaurantCollection)
                     .where('rating', 'in', ratings)
                     .where('owner', '==', ownerId)
-                    .orderBy('updatedOnValue', 'asc')
+                    .orderBy('updatedOnValue', 'desc')
                     .limit(pageCount).offset((pageNo - 1) * pageCount).get();
             const restaurants = [];
             if (!querySnapshot.empty) {

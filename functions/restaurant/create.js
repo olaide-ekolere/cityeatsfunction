@@ -55,9 +55,17 @@ exports.handler = async (req, res) => {
                     errorStatus = 406;
                     return Promise.reject(new Error(`Duplicate entry: ${restaurant.name} already exists on the platform`));
                 }
+                //Load dashboard
+                const dashboardRef = db.collection(collection.settings)
+                    .doc(collection.dashboard);
+                const dashboardSnapshot = await t.get(dashboardRef);
+                const dashboard = dashboardSnapshot.data();
+                dashboard.restaurants += 1;
+
                 var restaurantRef = db.collection(collection.restaurantCollection).doc();
                 const id = restaurantRef.id;
                 t.set(restaurantRef, restaurant);
+                t.set(dashboardRef, dashboard);
                 restaurant.id = id;
                 res.status(200).send(restaurant);
                 return Promise.resolve('Operation Successful');

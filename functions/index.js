@@ -29,10 +29,7 @@ exports.getRestaurants = functions.https.onRequest(getRestaurants.handler);
 const restaurantById = require('./restaurant/get');
 exports.restaurantById = functions.https.onRequest(restaurantById.handler);
 
-// // Create and Deploy Your First Cloud Functions
-// // https://firebase.google.com/docs/functions/write-firebase-functions
-//
-// exports.helloWorld = functions.https.onRequest((request, response) => {
-//   functions.logger.info("Hello logs!", {structuredData: true});
-//   response.send("Hello from Firebase!");
-// });
+//Comments
+const addComment = require('./comment/create');
+exports.addComment = functions.https.onRequest(addComment.handler);
+
