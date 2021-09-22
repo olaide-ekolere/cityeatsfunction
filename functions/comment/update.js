@@ -19,13 +19,17 @@ exports.handler = async (req, res) => {
             const rating = req.body.rating;
             const commentText = req.body.comment === undefined ? '' : utilities.trimSpaces(req.body.comment);
             const id = req.body.id;
-            const claims = await auth.hasAccess(db, idToken,);
+            const visitDate = req.body.visitDate;
             if (typeof id !== 'string' || utilities.trimSpaces(id).length < 2) {
                 throw new Error('Restaurant Id is required');
             }
             if (typeof rating !== 'number' || rating < 1 || rating > 5) {
                 throw new Error(`Invalid rating: ${rating}`);
             }
+            if (typeof visitDate !== 'string' || utilities.trimSpaces(visitDate).length !== 10) {
+                throw new Error('Vist Date must be yyyy-mm-dd');
+            }
+            const claims = await auth.hasAccess(db, idToken,);
             return await db.runTransaction(async t => {
                 //Load user
                 const userRef = db.collection(collection.userCollection).doc(claims.uid);
@@ -131,12 +135,14 @@ exports.handler = async (req, res) => {
                 else {
                     restaurant.rating5 += 1;
                 }
-                if (comment.rating !== rating || comment.comment !== commentText) {
+                if (comment.rating !== rating || comment.comment !== commentText ||
+                    comment.visitDate !== new Date(visitDate).toDateString()) {
                     comment.updatedOn = new Date().toString('en-US');
                     comment.updatedOnValue = new Date().getTime();
                 }
                 comment.rating = rating;
                 comment.comment = commentText;
+                comment.visitDate = new Date(visitDate).toDateString();
 
                 const totalScore = (restaurant.rating5 * 5) + (restaurant.rating4 * 4) +
                     (restaurant.rating3 * 3) + (restaurant.rating2 * 2) + restaurant.rating1;

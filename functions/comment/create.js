@@ -19,6 +19,7 @@ exports.handler = async (req, res) => {
             const rating = req.body.rating;
             const commentText = req.body.comment === undefined ? '' : utilities.trimSpaces(req.body.comment);
             const id = req.body.id;
+            const visitDate = req.body.visitDate;
             const claims = await auth.hasAccess(db, idToken,);
             if (typeof id !== 'string' || utilities.trimSpaces(id).length < 2) {
                 throw new Error('Restaurant Id is required');
@@ -26,12 +27,17 @@ exports.handler = async (req, res) => {
             if (typeof rating !== 'number' || rating < 1 || rating > 5) {
                 throw new Error(`Invalid rating: ${rating}`);
             }
+            if (typeof visitDate !== 'string' || utilities.trimSpaces(visitDate).length !== 10) {
+                throw new Error('Vist Date must be yyyy-mm-dd');
+            }
 
             const comment = {
                 owner: claims.uid,
+                name: claims.displayName,
                 comment: commentText,
                 rating: rating,
                 reply: {},
+                visitDate: new Date(visitDate).toDateString(),
                 suspended: false,
                 createdOn: new Date().toString('en-US'),
                 createdOnValue: new Date().getTime(),
