@@ -131,6 +131,10 @@ exports.handler = async (req, res) => {
                 else {
                     restaurant.rating5 += 1;
                 }
+                if (comment.rating !== rating || comment.comment !== commentText) {
+                    comment.updatedOn = new Date().toString('en-US');
+                    comment.updatedOnValue = new Date().getTime();
+                }
                 comment.rating = rating;
                 comment.comment = commentText;
 
@@ -140,14 +144,14 @@ exports.handler = async (req, res) => {
                     restaurant.rating2 + restaurant.rating1;
                 const average = totalScore / totalUsers;
 
-                restaurant.fullRating = average.toFixed(4); 
+                restaurant.fullRating = average.toFixed(4);
                 restaurant.rating = Math.floor(average);
 
                 //save all
                 t.set(dashboardRef, dashboard);
                 t.set(commentRef, comment);
                 t.set(restaurantRef, restaurant);
-                
+
                 res.status(200).send(comment);
                 return Promise.resolve('Operation Successful');
             });

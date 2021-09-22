@@ -1,6 +1,7 @@
 const admin = require('firebase-admin');
 const cors = require('cors')({ origin: true });
 const collection = require('../utils/collections');
+const utilities = require('../utils/utilities');
 const db = admin.firestore();
 
 exports.handler = async (req, res) => {
@@ -23,7 +24,11 @@ exports.handler = async (req, res) => {
             if (req.query.pageCount) {
                 pageCount = parseInt(req.query.pageCount);
             }
-            const ownerId = req.query.ownerId;
+
+            const restaurantId = req.query.restaurantId;
+            if (typeof restaurantId !== 'string' || utilities.trimSpaces(restaurantId).length < 2) {
+                throw new Error('Restaurant Id is required');
+            }
             const r1 = req.query.r1 === undefined ? 1 : parseInt(req.query.r1);
             const r2 = req.query.r2 === undefined ? 1 : parseInt(req.query.r2);
             const r3 = req.query.r3 === undefined ? 1 : parseInt(req.query.r3);
@@ -37,34 +42,35 @@ exports.handler = async (req, res) => {
             if (r3 === 1) ratings.push(3);
             if (r4 === 1) ratings.push(4);
             if (r5 === 1) ratings.push(5);
-            if(ratings.length===0||ratings.length===5){
-                ratings.push(0);
+            if (ratings.length === 0 || ratings.length === 5) {
+                ratings.push(1);
+                ratings.push(2);
+                ratings.push(3);
+                ratings.push(4);
+                ratings.push(5);
             }
-            const querySnapshot = ownerId === undefined ?
-                (all? await db.collection(collection.restaurantCollection)
-                .where('rating', 'in', ratings)
-                .orderBy('fullRating', 'desc')
-                .limit(pageCount).offset((pageNo - 1) * pageCount).get() :
-                await db.collection(collection.restaurantCollection)
+            const querySnapshot =
+                all ? await db.collection(collection.restaurantReviewCollection)
+                    .doc(restaurantId).collection(collection.database)
                     .where('rating', 'in', ratings)
-                    .where('suspended', '==', false)
-                    .orderBy('fullRating', 'desc')
-                    .limit(pageCount).offset((pageNo - 1) * pageCount).get()) :
-                await db.collection(collection.restaurantCollection)
-                    .where('rating', 'in', ratings)
-                    .where('owner', '==', ownerId)
                     .orderBy('updatedOnValue', 'desc')
-                    .limit(pageCount).offset((pageNo - 1) * pageCount).get();
-            const restaurants = [];
+                    .limit(pageCount).offset((pageNo - 1) * pageCount).get() :
+                    await db.collection(collection.restaurantReviewCollection)
+                        .doc(restaurantId).collection(collection.database)
+                        .where('rating', 'in', ratings)
+                        .where('suspended', '==', false)
+                        .orderBy('updatedOnValue', 'desc')
+                        .limit(pageCount).offset((pageNo - 1) * pageCount).get();
+            const comments = [];
             if (!querySnapshot.empty) {
-                querySnapshot.forEach((restaurantSnapshot) => {
-                    var restaurant = restaurantSnapshot.data();
-                    restaurant.id = restaurantSnapshot.id;
-                    restaurants.push(restaurant);
+                querySnapshot.forEach((commentSnapshot) => {
+                    var comment = commentSnapshot.data();
+                    comment.id = commentSnapshot.id;
+                    comments.push(comment);
                 });
             }
             res.status(200).send({
-                restaurants: restaurants,
+                comments: comments,
                 pageNo: pageNo,
                 pageCount: pageCount,
             });
