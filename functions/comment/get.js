@@ -2,6 +2,7 @@ const admin = require('firebase-admin');
 const cors = require('cors')({ origin: true });
 const collection = require('../utils/collections');
 const db = admin.firestore();
+const auth = require('../utils/auth');
 
 exports.handler = async (req, res) => {
     cors(req, res, async () => {
