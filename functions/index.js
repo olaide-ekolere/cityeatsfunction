@@ -7,7 +7,7 @@ admin.initializeApp({projectId: 'city-eats-983bd'});
 const signUp = require('./user/create');
 exports.signUp = functions.https.onRequest(signUp.handler);
 
-const signIn = require('./user/read');
+const signIn = require('./user/verify_password');
 exports.signIn = functions.https.onRequest(signIn.handler);
 
 const refreshToken = require('./user/refresh_token');
@@ -47,4 +47,14 @@ exports.getComments = functions.https.onRequest(getComments.handler);
 
 const replyComment = require('./comment/reply');
 exports.replyComment = functions.https.onRequest(replyComment.handler);
+
+//Settings
+const dashboard = require('./settings/dashboard');
+exports.dashboard = functions.https.onRequest(dashboard.handler);
+
+const getUsers = require('./user/read');
+exports.getUsers = functions.https.onRequest(getUsers.handler);
+
+const susComment = require('./comment/sus');
+exports.susComment = functions.https.onRequest(susComment.handler);
 

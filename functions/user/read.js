@@ -1,16 +1,14 @@
 const admin = require('firebase-admin');
 const cors = require('cors')({ origin: true });
-const promiseNetwork = require('request-promise');
 const collection = require('../utils/collections');
-
-
 const db = admin.firestore();
+const auth = require('../utils/auth');
+
 exports.handler = async (req, res) => {
     cors(req, res, async () => {
         //check environment variable
         //fetch variables from request body
-        var email = req.body.email;
-        var password = req.body.password;
+        const idToken = req.header('FIREBASE_AUTH_TOKEN');
         var statusCode = 400;
         try {
             const apiKey = req.header('x-api-key');
@@ -18,40 +16,45 @@ exports.handler = async (req, res) => {
                 statusCode = 403;
                 throw new Error('Forbidden');
             }
-            if (typeof email !== 'string') {
-                throw new Error('Email is required');
+            if (idToken === undefined) {
+                statusCode = 403;
+                throw new Error('Unauthorized Access');
             }
-            else {
-                const emailRegexp = /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$/;
-                if (!emailRegexp.test(email)) {
-                    throw new Error('Invalid Email supplied');
-                }
+            const claims = await auth.hasAccess(db, idToken,);
+            if(!auth.isAdmin(claims.email)){
+                statusCode = 403;
+                throw new Error('Forbidden');
             }
-            if (typeof password !== 'string' || password.length < 6) {
-                throw new Error('Password is must be at least 6 characters');
-            }
-            let key = new Buffer(collection.key, 'base64').toString('ascii');
-            var options = {
-                method: 'POST',
-                uri: `https://www.googleapis.com/identitytoolkit/v3/relyingparty/verifyPassword?key=${key}`,
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: {
-                    'email': req.body.email,
-                    'password': req.body.password,
-                    'returnSecureToken': true
-                },
-                json: true
-            };
-            let response = await promiseNetwork(options);
 
-            res.status(200).send(response);
-            return Promise.resolve('Sign In Done');
+            var pageNo = 1;
+            var pageCount = 20;
+            if (req.query.pageNo) {
+                pageNo = parseInt(req.query.pageNo);
+            }
+            if (req.query.pageCount) {
+                pageCount = parseInt(req.query.pageCount);
+            }
+            const querySnapshot = await db.collection(collection.userCollection)
+                    .orderBy('displayName', 'asc')
+                    .limit(pageCount).offset((pageNo - 1) * pageCount).get();
+            const users = [];
+            if (!querySnapshot.empty) {
+                querySnapshot.forEach((userSnapshot) => {
+                    var user = userSnapshot.data();
+                    user.id = userSnapshot.id;
+                    users.push(user);
+                });
+            }
+            res.status(200).send({
+                users: users,
+                pageNo: pageNo,
+                pageCount: pageCount,
+            });
+            return Promise.resolve('Operation Successful');
         } catch (error) {
-            console.log(error);
-            res.status(error.statusCode).send(error.error.error);
-            return Promise.resolve('SIGN IN FAILED');
+            console.log('Error: ', error);
+            res.status(statusCode).send({ errorMessage: error.message });
+            return Promise.reject(new Error(error));
         }
     });
 };

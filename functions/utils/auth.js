@@ -8,6 +8,10 @@ exports.hasAccess = async (db, idToken) => {
     const claims = await admin.auth().verifyIdToken(idToken, true);
     return Promise.resolve(claims);
 };
+
+exports.isAdmin =  (email) => {
+    return email !== undefined && email ===  "olaide@cityeats.com";
+};
 /*
 exports.hasBusinessAccess = async (db, environment, idToken) => {
     const claims = await admin.auth().verifyIdToken(idToken, true);

@@ -34,7 +34,7 @@ exports.handler = async (req, res) => {
             const reply = {
                 text: replyText,
                 suspended: false,
-                createdOn: new Date().toString('en-US'),
+                createdOn: new Date().toDateString(),
                 createdOnValue: new Date().getTime()
             };
             return await db.runTransaction(async t => {
