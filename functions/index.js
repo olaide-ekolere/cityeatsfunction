@@ -23,6 +23,9 @@ exports.onCreateUserHandler = functions.auth.user().onCreate(userTriggers.onCrea
 const createRestaurant = require('./restaurant/create');
 exports.createRestaurant = functions.https.onRequest(createRestaurant.handler);
 
+const updateRestaurant = require('./restaurant/update');
+exports.updateRestaurant = functions.https.onRequest(updateRestaurant.handler);
+
 const getRestaurants = require('./restaurant/read');
 exports.getRestaurants = functions.https.onRequest(getRestaurants.handler);
 

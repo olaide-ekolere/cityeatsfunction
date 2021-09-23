@@ -33,7 +33,6 @@ exports.handler = async (req, res) => {
 
             const comment = {
                 owner: claims.uid,
-                name: claims.displayName,
                 comment: commentText,
                 rating: rating,
                 reply: {},
@@ -48,16 +47,6 @@ exports.handler = async (req, res) => {
                 //Load user
                 const userRef = db.collection(collection.userCollection).doc(claims.uid);
                 const userSnapshot = await t.get(userRef);
-                //const createUser = !userSnapshot.exists;
-                let user = {
-                    displayName: claims.displayName,
-                    email: claims.email,
-                    suspended: false,
-                    createdOn: new Date().toString('en-US'),
-                    createdOnValue: new Date().getTime(),
-                    updatedOn: new Date().toString('en-US'),
-                    updatedOnValue: new Date().getTime()
-                };
                 if (userSnapshot.exists) {
                     user = userSnapshot.data();
                 }
@@ -65,6 +54,7 @@ exports.handler = async (req, res) => {
                     status = 403;
                     throw new Error('Account suspended');
                 }
+                comment.name = user.displayName;
 
                 //Load restaurant
                 const restaurantRef = db.collection(collection.restaurantCollection).doc(id);
