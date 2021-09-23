@@ -45,3 +45,6 @@ exports.updateComment = functions.https.onRequest(updateComment.handler);
 const getComments = require('./comment/read');
 exports.getComments = functions.https.onRequest(getComments.handler);
 
+const replyComment = require('./comment/reply');
+exports.replyComment = functions.https.onRequest(replyComment.handler);
+
